@@ -5,12 +5,14 @@ import Home from './home';
 
 const headerStyles = {
     padding: 18,
-    fontSize: 16,
+    fontSize: 18,
     height: 56,
+    fontWeight: 'bolder',
     background: '#34c3ff',
     color: ' #fff',
     whiteSpace: 'nowrap',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    textAlign: 'center'
 };
 
 function App() {
@@ -25,7 +27,7 @@ function App() {
                     >
                         <Sidenav.Header>
                             <div style={headerStyles}>
-                                <span style={{ marginLeft: 12 }}> BRAND</span>
+                                <span style={{ marginLeft: 12 }}>Tier5 Home Task</span>
                             </div>
                         </Sidenav.Header>
                         <Sidenav style={{ height: '100%' }}>
