@@ -4,31 +4,30 @@ var UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: [true, "username is required"],
+      required: [true, "Username is required"],
     },
-    roles: {
-      type: Array,
-      default: ["user"],
-    },
-    isBlocked: {
-      type: Boolean,
-      default: false,
-    },
-    email: {
+    country: {
       type: String,
-      lowercase: true,
-      unique: true,
-      required: [true, "Email can't be blank"],
-      match: [/\S+@\S+\.\S+/, "Email is invalid"],
-      index: true,
+      required: [true, "Country is required"],
     },
-    profileImage: {
-      type: String,
-      default: "",
+    age: {
+      type: Number,
+      required: [true, "Age is required"],
     },
-    password: {
-      type: String,
-      required: true,
+    gender: {
+      type: Number,
+      enum: [1, 2, 3], // 1->Male | 2->Female | 3->Trans
+      required: [true, "Gender is required"],
+    },
+    devices: {
+      type: Number,
+      enum: [1, 2, 3, 4, 5], // 1->Android | 2->IOS | 3->Windows | 4->Mac | 5->Linux
+      required: [true, "Gender is required"],
+    },
+    activeHours: {
+      today: Number,
+      thisWeek: Number,
+      thisMonth: Number,
     },
   },
   {
