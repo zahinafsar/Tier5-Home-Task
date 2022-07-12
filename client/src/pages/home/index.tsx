@@ -4,6 +4,8 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
+  MouseSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -13,18 +15,50 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
-import { SortableItem } from '../../components/sortItem';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { SortableItem } from '../../components/SortItem';
+import {
+  ArcElement,
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  RadialLinearScale,
+  Filler,
+} from 'chart.js';
+import { Pie, Line, Bar, Radar } from 'react-chartjs-2';
+import { CountrySegment } from '../../components/SegmentCard/Country';
+import { DeviceSegment } from '../../components/SegmentCard/Device';
+import { GenderSegment } from '../../components/SegmentCard/Gender';
+import { IDashboardItem, IDashboardProp } from '../../interface/IDashboard';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  RadialLinearScale,
+  Filler,
+);
 
 const data = {
-  labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+  labels: ['10 july', '11 july', '12 july', '13 july', '14 july', '15 july', '16 july', '17 july', '18 july', '19 july', '20 july'],
   datasets: [
     {
-      label: '# of Votes',
-      data: [12, 19, 3, 5, 2, 3],
+      label: 'Daily Active Hours',
+      data: [90, 60, 80, 30, 80, 90, 70, 80, 90, 100, 110],
+      axisY: {
+        suffix: "k"
+      },
       backgroundColor: [
         'rgba(255, 99, 132, 0.2)',
         'rgba(54, 162, 235, 0.2)',
@@ -46,19 +80,13 @@ const data = {
   ],
 };
 
-export default function App() {
-  const [items, setItems] = useState([
-    { id: '1' },
-    { id: '2' },
-    { id: '3' },
-    { id: '4' },
-    { id: '5' },
-  ]);
+export default function App({ items, setItems, removeItem }: { items: IDashboardProp[], setItems: any, removeItem: any }) {
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
     }),
   );
 
@@ -69,13 +97,30 @@ export default function App() {
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={items.map(({ id }) => id)}
+        items={items.map(({ id }: any) => id)}
         strategy={rectSortingStrategy}
       >
         <Grid>
-          {items.map(({ id }) => (
-            <SortableItem key={id} id={id}>
-              <Pie data={data} />
+          {items.map(({ id, type, category, value }: any) => (
+            <SortableItem removeItem={removeItem} key={id} id={id}>
+              {
+                type === 'pie' ? (
+                  <Pie data={data} />
+                ) : type === 'line' ? (
+                  <Line data={data} />
+                ) : type === 'bar' ? (
+                  <Bar data={data} />
+                ) : type === 'radar' ? (
+                  <Radar data={data} />
+                ) : type === 'segment' ?
+                  category === 'country' ? (
+                    <CountrySegment value={value} />
+                  ) : category === 'device' ? (
+                    <DeviceSegment value={value} />
+                  ) : category === 'gender' ? (
+                    <GenderSegment value={value} />
+                  ) : null : null
+              }
             </SortableItem>
           ))}
         </Grid>
@@ -83,11 +128,11 @@ export default function App() {
     </DndContext>
   );
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event: any) {
     const { active, over } = event;
 
     if (active.id !== over.id) {
-      setItems((items) => {
+      setItems((item: any) => {
         const oldIndex = items.findIndex(({ id }) => id === active.id);
         const newIndex = items.findIndex(({ id }) => id === over.id);
 
@@ -97,7 +142,7 @@ export default function App() {
   }
 }
 
-function Grid({ children }) {
+function Grid({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
