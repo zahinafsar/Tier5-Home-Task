@@ -1,7 +1,7 @@
 const User = require("../models/Users");
 const { successResponse, errorResponse } = require("../utils/response");
 const { generateUsers } = require("../utils/generateUser");
-const { GENDER, DEVICES } = require("../../enums/user");
+const { GENDER, DEVICES } = require("../enums/user");
 
 exports.add_dummy_users = async (req, res, next) => {
   try {

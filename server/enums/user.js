@@ -1,10 +1,10 @@
-export const GENDER = {
+exports.GENDER = {
   1: "Male",
   2: "Female",
   3: "Transgender",
 };
 
-export const DEVICES = {
+exports.DEVICES = {
   1: "Android",
   2: "IOS",
   3: "Windows",

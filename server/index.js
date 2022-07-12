@@ -11,6 +11,7 @@ var cors = require("cors");
 
 //Routers
 const userRoutes = require("./routes/user");
+const dashboardRoutes = require("./routes/dashboard");
 //Routers
 
 // Middleware
@@ -39,6 +40,7 @@ mongoose
 
 //Use Routes
 app.use("/api/user", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 //Use Routes
 
 //Initialize Socket
