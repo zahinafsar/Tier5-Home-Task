@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { Sidenav, Container, Content, Header, Navbar, Sidebar, CustomProvider } from 'rsuite';
-import { Dashboard } from '@rsuite/icons';
+import { useEffect } from 'react';
+import { Sidenav, Container, Sidebar, CustomProvider } from 'rsuite';
 import Home from './home';
 import { AiOutlinePieChart } from 'react-icons/ai';
 import { AiOutlineLineChart } from 'react-icons/ai';
@@ -9,7 +8,9 @@ import { AiOutlineRadarChart } from 'react-icons/ai';
 import { MdSegment } from 'react-icons/md';
 import { TbPoint } from 'react-icons/tb';
 import Space from '../components/Space';
-import { IDashboardItem, IDashboardProp } from '../interface/IDashboard';
+import { IDashboardProp } from '../interface/IDashboard';
+import { useCustomDispatch, useCustomSelector } from '../store';
+import { setGlobalStore } from '../store/reducers/global';
 
 
 const headerStyles = {
@@ -49,19 +50,15 @@ const SubNav = ({ title, onClick }: {
 
 
 function App() {
-    const [items, setItems] = useState<IDashboardProp[]>([]);
-    const allItems = {
-        pie: { type: 'pie' },
-        line: { type: 'line' },
-        bar: { type: 'bar' },
-        radar: { type: 'radar' },
-        segment: {
-            country: { type: 'segment', category: 'country', value: 'India' },
-            gender: { type: 'segment', category: 'gender', value: 'Male' },
-            device: { type: 'segment', category: 'device', value: 'Android' }
-        }
-    }
-    const addItem = (type: keyof typeof allItems, category?: keyof typeof allItems.segment, value?: string) => {
+    const { dashboard: items } = useCustomSelector(state => state.global)
+
+    const dispatch = useCustomDispatch()
+
+    useEffect(() => {
+        // updateDashboard()
+    }, [items])
+
+    const addItem = (type: string, category?: string, value?: string) => {
         let newData: IDashboardProp;
         if (category) {
             newData = {
@@ -76,13 +73,12 @@ function App() {
                 type: type,
             }
         }
-        setItems((prev: any) => [
-            ...prev,
-            newData
-        ])
-    }
-    const removeItem = (id: string | number) => {
-        setItems((prev) => prev.filter(itemData => itemData.id !== id))
+        dispatch(setGlobalStore({
+            dashboard: [
+                ...items,
+                newData
+            ]
+        }))
     }
     return (
         <CustomProvider>
@@ -112,7 +108,7 @@ function App() {
                         </Sidenav>
                     </Sidebar>
                     <Container style={{ overflow: 'auto' }}>
-                        <Home items={items} setItems={setItems} removeItem={removeItem} />
+                        <Home />
                     </Container>
                 </Container>
             </div>

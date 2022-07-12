@@ -3,20 +3,38 @@ import countries, { languages } from "countries-list";
 import Space from '../Space';
 import { SegmentCard } from '.';
 import { useState } from 'react';
+import { useCustomDispatch, useCustomSelector } from '../../store';
+import { setGlobalStore } from '../../store/reducers/global';
 
 interface IProps {
     value: string;
+    id: number;
 }
 
 export function CountrySegment(props: IProps) {
-    const countryCodes = Object.keys(countries.countries);
-    const countryNames = countryCodes.map(code =>
-    ({
-        label: (countries.countries as any)[code].name,
-        value: (countries.countries as any)[code].name
-    }));
-    const [active, setActive] = useState(props.value);
+    const dispatch = useCustomDispatch();
+    const { dashboard } = useCustomSelector(state => state.global)
+    const itemData = dashboard.find(item => item.id === props.id)
+    const handleChange = (value: string) => {
+        const newData = dashboard.map((item: any) => {
+            const newItem = { ...item }
+            if (newItem.id === props.id) {
+                newItem.value = value;
+            }
+            return newItem;
+        })
+        dispatch(setGlobalStore({
+            dashboard: newData
+        }))
+    }
     return (
-        <SegmentCard header='User Segment By Country' title={active} number="25k" data={countryNames} onChange={(value) => setActive(value)} value={active} />
+        <SegmentCard header='User Segment By Country' title={itemData?.value} number="25k" data={countryNames} onChange={handleChange} value={itemData?.value} />
     );
 }
+
+const countryCodes = Object.keys(countries.countries);
+const countryNames = countryCodes.map(code =>
+({
+    label: (countries.countries as any)[code].name,
+    value: (countries.countries as any)[code].name
+}));

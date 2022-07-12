@@ -6,11 +6,11 @@ import Space from '../Space';
 type dataProp = { label: string; value: string; }
 interface IProps {
     header?: string;
-    title: string;
+    title?: string;
     number: string | number;
     data: dataProp[];
     onChange: (value: string) => void;
-    value: string;
+    value?: string;
 }
 
 export function SegmentCard(props: IProps) {

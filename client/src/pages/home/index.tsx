@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import React, { } from 'react';
 import {
   DndContext,
   closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
   MouseSensor,
   useSensor,
   useSensors,
@@ -12,7 +9,6 @@ import {
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableItem } from '../../components/SortItem';
@@ -34,7 +30,9 @@ import { Pie, Line, Bar, Radar } from 'react-chartjs-2';
 import { CountrySegment } from '../../components/SegmentCard/Country';
 import { DeviceSegment } from '../../components/SegmentCard/Device';
 import { GenderSegment } from '../../components/SegmentCard/Gender';
-import { IDashboardItem, IDashboardProp } from '../../interface/IDashboard';
+import { IDashboardProp } from '../../interface/IDashboard';
+import { useCustomDispatch, useCustomSelector } from '../../store';
+import { setGlobalStore } from '../../store/reducers/global';
 
 ChartJS.register(
   ArcElement,
@@ -80,7 +78,21 @@ const data = {
   ],
 };
 
-export default function App({ items, setItems, removeItem }: { items: IDashboardProp[], setItems: any, removeItem: any }) {
+export default function App() {
+  const { dashboard: items } = useCustomSelector(state => state.global)
+
+  const dispatch = useCustomDispatch()
+
+  const setItems = (data: IDashboardProp[]) => {
+    dispatch(setGlobalStore({
+      dashboard: data
+    }))
+  }
+
+  const removeItem = (id: string | number) => {
+    const filteredItem = items.filter(itemData => itemData.id !== id)
+    setItems(filteredItem)
+  }
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -97,7 +109,7 @@ export default function App({ items, setItems, removeItem }: { items: IDashboard
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={items.map(({ id }: any) => id)}
+        items={items.map((data: any) => data.id)}
         strategy={rectSortingStrategy}
       >
         <Grid>
@@ -114,11 +126,11 @@ export default function App({ items, setItems, removeItem }: { items: IDashboard
                   <Radar data={data} />
                 ) : type === 'segment' ?
                   category === 'country' ? (
-                    <CountrySegment value={value} />
+                    <CountrySegment id={id} value={value} />
                   ) : category === 'device' ? (
-                    <DeviceSegment value={value} />
+                    <DeviceSegment id={id} value={value} />
                   ) : category === 'gender' ? (
-                    <GenderSegment value={value} />
+                    <GenderSegment id={id} value={value} />
                   ) : null : null
               }
             </SortableItem>
@@ -130,14 +142,11 @@ export default function App({ items, setItems, removeItem }: { items: IDashboard
 
   function handleDragEnd(event: any) {
     const { active, over } = event;
-
+    const oldIndex = items.findIndex(({ id }) => id === active.id);
+    const newIndex = items.findIndex(({ id }) => id === over.id);
     if (active.id !== over.id) {
-      setItems((item: any) => {
-        const oldIndex = items.findIndex(({ id }) => id === active.id);
-        const newIndex = items.findIndex(({ id }) => id === over.id);
-
-        return arrayMove(items, oldIndex, newIndex);
-      });
+      const newArray = arrayMove(items, oldIndex, newIndex);
+      setItems(newArray);
     }
   }
 }
