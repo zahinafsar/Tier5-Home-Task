@@ -42,9 +42,11 @@ exports.get_user_segmentation_by_country = async (req, res, next) => {
     const count = await User.countDocuments({
       country: { $regex: country, $options: "i" },
     });
+    const totalCount = await User.countDocuments({});
     res.send(
       successResponse(`Total number of user for country ${country}`, {
         count,
+        persent: (count / totalCount) * 100,
       })
     );
   } catch (err) {
@@ -61,9 +63,11 @@ exports.get_user_segmentation_by_gender = async (req, res, next) => {
     const count = await User.countDocuments({
       gender,
     });
+    const totalCount = await User.countDocuments({});
     res.send(
       successResponse(`Total number of user for gender ${GENDER[gender]}`, {
         count,
+        persent: (count / totalCount) * 100,
       })
     );
   } catch (err) {
@@ -80,9 +84,11 @@ exports.get_user_segmentation_by_device = async (req, res, next) => {
     const count = await User.countDocuments({
       devices: device,
     });
+    const totalCount = await User.countDocuments({});
     res.send(
       successResponse(`Total number of user for device ${DEVICES[device]}`, {
         count,
+        persent: (count / totalCount) * 100,
       })
     );
   } catch (err) {
