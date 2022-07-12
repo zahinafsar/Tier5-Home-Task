@@ -25,3 +25,7 @@ export const get_user_by_device = async (device?: string): Promise<AxiosResponse
 export const get_most_active_users = async (): Promise<AxiosResponse> => {
   return await useAxios.get("user/active-users");
 };
+
+export const get_usage_table_data = async (): Promise<AxiosResponse> => {
+  return await useAxios.get("dashboard/table");
+};

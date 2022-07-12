@@ -1,4 +1,4 @@
-import React, { } from 'react';
+import React, { useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -34,6 +34,7 @@ import { IDashboardProp } from '../../interface/IDashboard';
 import { useCustomDispatch, useCustomSelector } from '../../store';
 import { setGlobalStore } from '../../store/reducers/global';
 import ActiveUsersTable from '../../components/ActiveUsersTable';
+import { get_usage_table_data } from '../../api/dashboard';
 
 ChartJS.register(
   ArcElement,
@@ -49,38 +50,64 @@ ChartJS.register(
   Filler,
 );
 
-const data = {
-  labels: ['10 july', '11 july', '12 july', '13 july', '14 july', '15 july', '16 july', '17 july', '18 july', '19 july', '20 july'],
-  datasets: [
-    {
-      label: 'Daily Active Hours',
-      data: [90, 60, 80, 30, 80, 90, 70, 80, 90, 100, 110],
-      axisY: {
-        suffix: "k"
-      },
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)',
-      ],
-      borderColor: [
-        'rgba(255, 99, 132, 1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgba(153, 102, 255, 1)',
-        'rgba(255, 159, 64, 1)',
-      ],
-      borderWidth: 1,
-    },
-  ],
-};
+const backgroundColors = [
+  'rgba(255, 99, 132, 0.2)',
+  'rgba(54, 162, 235, 0.2)',
+  'rgba(255, 206, 86, 0.2)',
+  'rgba(75, 192, 192, 0.2)',
+  'rgba(153, 102, 255, 0.2)',
+  'rgba(255, 159, 64, 0.2)',
+  'rgba(255, 206, 86, 0.2)',
+  'rgba(75, 192, 192, 0.2)',
+  'rgba(153, 102, 255, 0.2)',
+  'rgba(255, 159, 64, 0.2)',
+]
+
+const borderColors = [
+  'rgba(255, 99, 132, 1)',
+  'rgba(54, 162, 235, 1)',
+  'rgba(255, 206, 86, 1)',
+  'rgba(75, 192, 192, 1)',
+  'rgba(153, 102, 255, 1)',
+  'rgba(255, 159, 64, 1)',
+  'rgba(255, 206, 86, 1)',
+  'rgba(75, 192, 192, 1)',
+  'rgba(153, 102, 255, 1)',
+  'rgba(255, 159, 64, 1)',
+]
 
 export default function App() {
   const { dashboard: items } = useCustomSelector(state => state.global)
+  const [graphData, setGraphData] = React.useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Daily Active Hours',
+        data: [],
+        axisY: {
+          suffix: "k"
+        },
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
+        borderWidth: 1,
+      },
+    ],
+  });
+
+  useEffect(() => {
+    getGraphData();
+  }, [])
+
+  const getGraphData = async () => {
+    const { data } = await get_usage_table_data()
+    setGraphData((prev: any) => ({
+      labels: data.data.usage.map((item: any) => item.year),
+      datasets: [{
+        ...prev.datasets[0],
+        data: data.data.usage.map((item: any) => item.totalUsage),
+      }]
+    }))
+  }
 
   const dispatch = useCustomDispatch()
 
@@ -118,13 +145,13 @@ export default function App() {
             <SortableItem isTable={type === 'table'} removeItem={removeItem} key={id} id={id}>
               {
                 type === 'pie' ? (
-                  <Pie data={data} />
+                  <Pie data={graphData} />
                 ) : type === 'line' ? (
-                  <Line data={data} />
+                  <Line data={graphData} />
                 ) : type === 'bar' ? (
-                  <Bar data={data} />
+                  <Bar data={graphData} />
                 ) : type === 'radar' ? (
-                  <Radar data={data} />
+                  <Radar data={graphData} />
                 ) : type === 'table' ? (
                   <ActiveUsersTable />
                 ) : type === 'segment' ?
