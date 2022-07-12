@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 var DashboardSchema = new mongoose.Schema({
+  name: String,
   dashboard: [],
 });
 

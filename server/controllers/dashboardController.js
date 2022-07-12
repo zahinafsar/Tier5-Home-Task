@@ -1,7 +1,7 @@
 const Usage = require("../models/Usage");
 const Dashboard = require("../models/Dashboard");
 const { generateUsage } = require("../utils/generateData");
-const { successResponse } = require("../utils/response");
+const { successResponse, errorResponse } = require("../utils/response");
 
 exports.add_dummy_usage = async (req, res, next) => {
   try {
@@ -25,18 +25,29 @@ exports.get_usage_table = async (req, res, next) => {
 
 exports.update_dashboard = async (req, res, next) => {
   try {
-    const { data } = req.body;
-    const dashboard = await Dashboard.find({});
-    if (dashboard.length === 0) {
-      const newDashboard = new Dashboard({ dashboard: data });
-      await newDashboard.save();
-    } else {
-      await Dashboard.findOneAndUpdate(
-        { _id: dashboard[0]._id },
-        { dashboard: data }
-      );
+    const { dashboard, name, id } = req.body;
+
+    const dashboard_data = {};
+    dashboard && (dashboard_data.dashboard = dashboard);
+    name && (dashboard_data.name = name);
+
+    const existing = await Dashboard.find({ name });
+    if (existing.length > 0) {
+      res.send(errorResponse(`Dashboard name already exists!`));
+      return;
     }
-    res.send(successResponse(`Dashboard updated!`));
+
+    if (id) {
+      await Dashboard.findOneAndUpdate({ _id: id }, dashboard_data);
+      res.send(successResponse(`Dashboard updated successfully`));
+    } else {
+      const newDashboard = new Dashboard({
+        name,
+        dashboard,
+      });
+      await newDashboard.save();
+      res.send(successResponse(`Dashboard added successfully`));
+    }
   } catch (err) {
     next(err);
   }
@@ -44,17 +55,18 @@ exports.update_dashboard = async (req, res, next) => {
 
 exports.get_dashboard = async (req, res, next) => {
   try {
-    const dashboard = await Dashboard.find({});
-    res.send(successResponse(`Dashboard fetched!`, dashboard[0]));
+    const id = req.params.id;
+    const dashboards = await Dashboard.find({ _id: id });
+    res.send(successResponse(`Dashboard fetched!`, dashboards[0]));
   } catch (err) {
     next(err);
   }
 };
 
-exports.get_usage_data = async (req, res, next) => {
+exports.get_all_dashboard = async (req, res, next) => {
   try {
-    const dashboard = await Dashboard.find({});
-    res.send(successResponse(`Dashboard fetched!`, dashboard[0]));
+    const dashboards = await Dashboard.find({});
+    res.send(successResponse(`Dashboards fetched!`, dashboards));
   } catch (err) {
     next(err);
   }
