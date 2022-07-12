@@ -5,12 +5,13 @@ const {
   get_user_segmentation_by_country,
   get_user_segmentation_by_gender,
   get_user_segmentation_by_device,
+  add_dummy_usage,
 } = require("../../controllers/userController");
 
 const router = express.Router();
 
 router
-  .get("/dummy-data", add_dummy_users)
+  .get("/dummy-user", add_dummy_users)
   .get("/active-users", get_active_users)
   .get("/users-country/:country", get_user_segmentation_by_country)
   .get("/users-gender/:gender", get_user_segmentation_by_gender)

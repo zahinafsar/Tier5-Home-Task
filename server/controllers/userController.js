@@ -1,11 +1,11 @@
 const User = require("../models/Users");
 const { successResponse, errorResponse } = require("../utils/response");
-const { generateUsers } = require("../utils/generateUser");
+const { generateUsers } = require("../utils/generateData");
 const { GENDER, DEVICES } = require("../enums/user");
 
 exports.add_dummy_users = async (req, res, next) => {
   try {
-    const dataLimit = 100000;
+    const dataLimit = 500000;
     const dummy_users = await generateUsers(dataLimit);
     await User.deleteMany({});
     await User.insertMany(dummy_users);
