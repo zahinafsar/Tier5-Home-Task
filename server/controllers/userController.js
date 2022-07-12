@@ -20,7 +20,11 @@ exports.add_dummy_users = async (req, res, next) => {
 exports.get_active_users = async (req, res, next) => {
   try {
     const mostActiveUser = await User.find({})
-      .sort({ "activeHours.thisMonth": -1 })
+      .sort({
+        "activeHours.thisMonth": -1,
+        "activeHours.thisWeek": -1,
+        "activeHours.today": -1,
+      })
       .limit(15);
     res.send(
       successResponse("Top 15 users by usage time", {
