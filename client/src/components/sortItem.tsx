@@ -9,6 +9,7 @@ interface IProps {
   children: React.ReactNode;
   id: string;
   removeItem: (id: string) => void;
+  isTable: boolean;
 }
 
 export function SortableItem(props: IProps) {
@@ -21,7 +22,7 @@ export function SortableItem(props: IProps) {
   } = useSortable({ id: props.id });
 
   const style = {
-    width: 400,
+    width: props.isTable ? 840 : 400,
     height: 420,
     padding: 20,
     margin: 20,
@@ -38,7 +39,7 @@ export function SortableItem(props: IProps) {
           cursor: 'pointer',
           marginLeft: '-17px',
           marginTop: '-30px'
-        }} size={30} color={theme.red} />
+        }} size={30} color={theme.grey} />
         {props.children}
       </div>
     </>

@@ -33,6 +33,7 @@ import { GenderSegment } from '../../components/SegmentCard/Gender';
 import { IDashboardProp } from '../../interface/IDashboard';
 import { useCustomDispatch, useCustomSelector } from '../../store';
 import { setGlobalStore } from '../../store/reducers/global';
+import ActiveUsersTable from '../../components/ActiveUsersTable';
 
 ChartJS.register(
   ArcElement,
@@ -114,7 +115,7 @@ export default function App() {
       >
         <Grid>
           {items.map(({ id, type, category, value }: any) => (
-            <SortableItem removeItem={removeItem} key={id} id={id}>
+            <SortableItem isTable={type === 'table'} removeItem={removeItem} key={id} id={id}>
               {
                 type === 'pie' ? (
                   <Pie data={data} />
@@ -124,6 +125,8 @@ export default function App() {
                   <Bar data={data} />
                 ) : type === 'radar' ? (
                   <Radar data={data} />
+                ) : type === 'table' ? (
+                  <ActiveUsersTable />
                 ) : type === 'segment' ?
                   category === 'country' ? (
                     <CountrySegment id={id} value={value} />
