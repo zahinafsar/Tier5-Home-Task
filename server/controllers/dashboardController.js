@@ -31,22 +31,40 @@ exports.update_dashboard = async (req, res, next) => {
     dashboard && (dashboard_data.dashboard = dashboard);
     name && (dashboard_data.name = name);
 
-    const existing = await Dashboard.find({ name });
-    if (existing.length > 0) {
-      res.send(errorResponse(`Dashboard name already exists!`));
-      return;
+    if (name) {
+      const existing = await Dashboard.findOne({ name });
+      if (existing && existing._id != id) {
+        res.send(errorResponse(`Dashboard name already exists!`));
+        return;
+      }
     }
 
     if (id) {
-      await Dashboard.findOneAndUpdate({ _id: id }, dashboard_data);
-      res.send(successResponse(`Dashboard updated successfully`));
+      const data = await Dashboard.findOneAndUpdate(
+        { _id: id },
+        dashboard_data,
+        {
+          new: true,
+        }
+      );
+      res.send(
+        successResponse(`Dashboard updated successfully`, {
+          ...data._doc,
+          new: false,
+        })
+      );
     } else {
       const newDashboard = new Dashboard({
         name,
         dashboard,
       });
-      await newDashboard.save();
-      res.send(successResponse(`Dashboard added successfully`));
+      const data = await newDashboard.save();
+      res.send(
+        successResponse(`Dashboard added successfully`, {
+          ...data._doc,
+          new: true,
+        })
+      );
     }
   } catch (err) {
     next(err);
@@ -65,7 +83,9 @@ exports.get_dashboard = async (req, res, next) => {
 
 exports.get_all_dashboard = async (req, res, next) => {
   try {
-    const dashboards = await Dashboard.find({});
+    // get all dashboard withour name
+
+    const dashboards = await Dashboard.find({}).select("-dashboard");
     res.send(successResponse(`Dashboards fetched!`, dashboards));
   } catch (err) {
     next(err);
