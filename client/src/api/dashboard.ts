@@ -6,8 +6,17 @@ export const get_dashboard_data = async (): Promise<AxiosResponse> => {
   return await useAxios.get("/dashboard");
 };
 
-export const set_dashboard_data = async (data: IDashboardProp[]): Promise<AxiosResponse> => {
-  return await useAxios.post("/dashboard", { data });
+export const get_single_dashboard_data = async (id: string): Promise<AxiosResponse> => {
+  return await useAxios.get("/dashboard/" + id);
+};
+
+interface IDashboardRequest {
+  id?: string,
+  name?: string,
+  dashboard?: IDashboardProp[]
+}
+export const set_dashboard_data = async ({ id, dashboard, name }: IDashboardRequest): Promise<AxiosResponse> => {
+  return await useAxios.post("/dashboard", { id, dashboard, name });
 };
 
 export const get_user_by_country = async (country?: string): Promise<AxiosResponse> => {
