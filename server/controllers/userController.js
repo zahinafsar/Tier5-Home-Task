@@ -5,7 +5,7 @@ const { GENDER, DEVICES } = require("../enums/user");
 
 exports.add_dummy_users = async (req, res, next) => {
   try {
-    const dataLimit = 500000;
+    const dataLimit = 100000;
     const dummy_users = await generateUsers(dataLimit);
     await User.deleteMany({});
     await User.insertMany(dummy_users);

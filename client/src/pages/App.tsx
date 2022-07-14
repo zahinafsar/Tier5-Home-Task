@@ -158,6 +158,7 @@ function App() {
                         dashboardName: data.data.name,
                     })
                 );
+                toaster.push(<Message showIcon type="success">New Dashboard has been created!</Message>)
             } else {
                 const newData = allDashboard.map((item) => {
                     const newItem = { ...item };
@@ -171,10 +172,13 @@ function App() {
                         allDashboard: newData
                     })
                 );
+                toaster.push(<Message showIcon type="success">Dashboard updated successfully!</Message>)
             }
         } catch (error: any) {
             setIsLoaded(false);
-            toaster.push(<Message showIcon type="error">{error}</Message>)
+            if (error.error) {
+                toaster.push(<Message showIcon type="error">{error.error}</Message>)
+            }
         }
     };
 

@@ -34,7 +34,7 @@ exports.update_dashboard = async (req, res, next) => {
     if (name) {
       const existing = await Dashboard.findOne({ name });
       if (existing && existing._id != id) {
-        res.send(errorResponse(`Dashboard name already exists!`));
+        res.status(400).send(errorResponse(`Dashboard name already exists!`));
         return;
       }
     }
@@ -59,7 +59,7 @@ exports.update_dashboard = async (req, res, next) => {
         dashboard,
       });
       const data = await newDashboard.save();
-      res.send(
+      res.status(201).send(
         successResponse(`Dashboard added successfully`, {
           ...data._doc,
           new: true,
